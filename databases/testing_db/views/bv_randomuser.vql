@@ -1,0 +1,50 @@
+﻿# REQUIRES-PROPERTIES-FILE - # Do not remove this comment!
+CREATE OR REPLACE WRAPPER JSON ds_randomuser
+    DATASOURCENAME=ds_randomuser
+    TUPLEROOT '/JSONFile'
+    ROUTE HTTP 'http.CommonsHttpClientConnection,120000' GET '${databases.testing_db.views.json.ds_randomuser.ROUTE.HTTP.URL}'
+    OUTPUTSCHEMA (jsonfile = 'JSONFile' : REGISTER OF (
+        count = 'count' : 'java.lang.Integer',
+        entries = 'entries' : ARRAY OF (
+            entries = 'entries' : REGISTER OF (
+                api = 'API' : 'java.lang.String',
+                description = 'Description' : 'java.lang.String',
+                auth = 'Auth' : 'java.lang.String',
+                https = 'HTTPS' : 'java.lang.String',
+                cors = 'Cors' : 'java.lang.String',
+                link = 'Link' : 'java.lang.String',
+                category = 'Category' : 'java.lang.String'
+            )
+        )
+    )
+    );
+
+CREATE OR REPLACE TYPE ds_randomuser_entries_entries AS REGISTER OF (api:text, description:text, auth:text, https:text, cors:text, link:text, category:text);
+
+CREATE OR REPLACE TYPE ds_randomuser_entries AS ARRAY OF ds_randomuser_entries_entries;
+
+CREATE OR REPLACE TABLE bv_randomuser I18N fr_euro (
+        count:int,
+        entries:ds_randomuser_entries
+    )
+    CACHE OFF
+    TIMETOLIVEINCACHE DEFAULT
+    ADD SEARCHMETHOD ds_randomuser(
+        I18N fr_euro
+        CONSTRAINTS (
+             ADD count NOS ZERO ()
+             ADD entries NOS ZERO ()
+             ADD entries NOS ZERO ()
+             ADD entries.api NOS ZERO ()
+             ADD entries.description NOS ZERO ()
+             ADD entries.auth NOS ZERO ()
+             ADD entries.https NOS ZERO ()
+             ADD entries.cors NOS ZERO ()
+             ADD entries.link NOS ZERO ()
+             ADD entries.category NOS ZERO ()
+        )
+        OUTPUTLIST (count, entries
+        )
+        WRAPPER (json ds_randomuser)
+    );
+

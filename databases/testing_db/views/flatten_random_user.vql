@@ -1,0 +1,5 @@
+﻿CREATE OR REPLACE VIEW flatten_random_user AS SELECT count AS count, cors AS cors, https AS https, auth AS auth, category AS category, link AS link, description AS description, api AS api FROM FLATTEN bv_randomuser AS v ( v.entries);
+
+ALTER VIEW flatten_random_user
+ LAYOUT (bv_randomuser = [20, 20, 200, 200]);
+
